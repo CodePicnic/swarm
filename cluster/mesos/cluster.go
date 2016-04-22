@@ -404,6 +404,11 @@ func (c *Cluster) Volumes() cluster.Volumes {
 	return nil
 }
 
+// Engines returns all the volumes in the cluster.
+func (c *Cluster) Engines() cluster.Engines {
+	return nil
+}
+
 // listNodes returns all the nodes in the cluster.
 func (c *Cluster) listNodes() []*node.Node {
 	c.RLock()

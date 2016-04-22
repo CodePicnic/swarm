@@ -99,4 +99,8 @@ type Cluster interface {
 
 	// Tag an image
 	TagImage(IDOrName string, repo string, tag string, force bool) error
+
+	// Return all engines
+	Engines() Engines
+
 }

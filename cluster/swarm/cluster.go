@@ -787,6 +787,21 @@ func (c *Cluster) Volumes() cluster.Volumes {
 	return out
 }
 
+
+// Engines returns all validated engines in the cluster.
+func (c *Cluster) Engines() cluster.Engines {
+        c.RLock()
+        defer c.RUnlock()
+
+        out := cluster.Engines{}
+	for _, n := range c.engines {
+		out = append(out, n)
+	}
+
+        return out
+}
+
+
 // listNodes returns all validated engines in the cluster, excluding pendingEngines.
 func (c *Cluster) listNodes() []*node.Node {
 	c.RLock()

@@ -1205,7 +1205,12 @@ func postCommit(c *context, w http.ResponseWriter, r *http.Request) {
 
 	cb := func(resp *http.Response) {
 		if resp.StatusCode == http.StatusCreated {
-			container.Engine.RefreshImages()
+			//log.Infof("Refresh Images PostCommit")
+			for _, engine := range c.cluster.Engines() {
+				log.Infof("Refresh Images PostCommit %s", engine.Addr)
+				engine.RefreshImages()
+			}
+			//container.Engine.RefreshImages()
 		}
 	}
 

@@ -126,6 +126,9 @@ type Engine struct {
 	opts            *EngineOpts
 }
 
+// Engines is a collection of Engine objects that can be filtered
+type Engines []*Engine
+
 // NewEngine is exported
 func NewEngine(addr string, overcommitRatio float64, opts *EngineOpts) *Engine {
 	e := &Engine{
