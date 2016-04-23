@@ -21,6 +21,7 @@ type Cluster interface {
 	// Return one image matching `IDOrName`
 	Image(IDOrName string) *Image
 
+
 	// Remove images from the cluster
 	RemoveImages(name string, force bool) ([]types.ImageDelete, error)
 

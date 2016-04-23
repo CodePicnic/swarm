@@ -1206,11 +1206,27 @@ func postCommit(c *context, w http.ResponseWriter, r *http.Request) {
 	cb := func(resp *http.Response) {
 		if resp.StatusCode == http.StatusCreated {
 			//log.Infof("Refresh Images PostCommit")
-			for _, engine := range c.cluster.Engines() {
-				log.Infof("Refresh Images PostCommit %s", engine.Addr)
-				engine.RefreshImages()
-			}
-			//container.Engine.RefreshImages()
+			//for _, engine := range c.cluster.Engines() {
+			//	log.Infof("Refresh Images PostCommit %s", engine.Addr)
+			//	engine.RefreshImages()
+			//}
+        		image := struct{ Id string }{}
+
+			decoder := json.NewDecoder(resp.Body)
+        		if err := decoder.Decode(&image); err != nil {
+                		httpError(w, err.Error(), http.StatusInternalServerError)
+        		}
+			
+			commit_image := &cluster.Image{}
+			commit_image.ID = image.Id
+			now := time.Now()
+			commit_image.Created = now.Unix()
+			temp_image_name := "temp/"+"temp_"+now.Format("20060102150405")
+			commit_image.RepoTags = append(commit_image.RepoTags, temp_image_name)
+			log.Infof("Refresh Images PostCommit %s", commit_image.ID)
+ 
+			container.Engine.AddImage(commit_image)
+			container.Engine.RefreshImages()
 		}
 	}
 

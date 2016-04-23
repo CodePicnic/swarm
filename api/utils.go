@@ -11,6 +11,8 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"io/ioutil"
+	"bytes"
 
 	log "github.com/Sirupsen/logrus"
 	"github.com/docker/swarm/cluster"
@@ -110,7 +112,12 @@ func proxyAsync(engine *cluster.Engine, w http.ResponseWriter, r *http.Request, 
 
 	copyHeader(w.Header(), resp.Header)
 	w.WriteHeader(resp.StatusCode)
+        body, _ := ioutil.ReadAll(resp.Body)
+
+	resp.Body = ioutil.NopCloser(bytes.NewBuffer(body))
 	io.Copy(NewWriteFlusher(w), resp.Body)
+	resp.Body = ioutil.NopCloser(bytes.NewBuffer(body))
+
 
 	if callback != nil {
 		callback(resp)

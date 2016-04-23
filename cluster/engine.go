@@ -1122,8 +1122,8 @@ func (e *Engine) AddContainer(container *Container) error {
 	return nil
 }
 
-// addImage injects an image into the internal state.
-func (e *Engine) addImage(image *Image) {
+// AddImage injects an image into the internal state.
+func (e *Engine) AddImage(image *Image) {
 	e.Lock()
 	defer e.Unlock()
 
