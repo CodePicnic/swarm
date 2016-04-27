@@ -15,6 +15,7 @@ type Node struct {
 	Labels     map[string]string
 	Containers cluster.Containers
 	Images     []*cluster.Image
+	PendingImages     []*cluster.Image
 
 	UsedMemory  int64
 	UsedCpus    int64
@@ -34,6 +35,7 @@ func NewNode(e *cluster.Engine) *Node {
 		Labels:          e.Labels,
 		Containers:      e.Containers(),
 		Images:          e.Images(),
+		PendingImages:          e.PendingImages(),
 		UsedMemory:      e.UsedMemory(),
 		UsedCpus:        e.UsedCpus(),
 		TotalMemory:     e.TotalMemory(),

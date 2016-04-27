@@ -1225,8 +1225,13 @@ func postCommit(c *context, w http.ResponseWriter, r *http.Request) {
 			commit_image.RepoTags = append(commit_image.RepoTags, temp_image_name)
 			log.Infof("Refresh Images PostCommit %s", commit_image.ID)
  
-			container.Engine.AddImage(commit_image)
+			//container.Engine.AddImage(commit_image)
+			container.Engine.AddPendingImage(commit_image)
+		        //log.Infof("PostCommit AddImage: Total pendingImages on  %s = %v", container.Engine.Addr, len(container.Engine.PendingImages()))
 			container.Engine.RefreshImages()
+		        //log.Infof("PostCommit RefreshImages: Total images on  %s = %v", container.Engine.Addr, len(container.Engine.Images()))
+			container.Engine.DeletePendingImage(commit_image)
+		        //log.Infof("PostCommit RefreshImages: Total pendingImages on  %s = %v", container.Engine.Addr, len(container.Engine.PendingImages()))
 		}
 	}
 

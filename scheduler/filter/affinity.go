@@ -54,6 +54,16 @@ func (f *AffinityFilter) Filter(config *cluster.ContainerConfig, nodes []*node.N
 						images = append(images, repo)
 					}
 				}
+				for _, image := range node.PendingImages {
+					images = append(images, image.ID)
+					images = append(images, image.RepoTags...)
+					for _, tag := range image.RepoTags {
+						repo, _ := cluster.ParseRepositoryTag(tag)
+						images = append(images, repo)
+					}
+				}
+				log.Infof("Affinity Images: Total images on  %s = %v", node.Addr, len(node.Images))
+				log.Infof("Affinity Images: Total images on  %s = %v", node.Addr, len(node.PendingImages))
 				if affinity.Match(images...) {
 					candidates = append(candidates, node)
 				}

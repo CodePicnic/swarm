@@ -113,6 +113,7 @@ type Engine struct {
 	refreshDelayer  *delayer
 	containers      map[string]*Container
 	images          []*Image
+	pendingImages   []*Image
 	networks        map[string]*Network
 	volumes         map[string]*Volume
 	client          dockerclient.Client
@@ -579,7 +580,9 @@ func (e *Engine) RemoveVolume(name string) error {
 // RefreshImages refreshes the list of images on the engine.
 func (e *Engine) RefreshImages() error {
 	imgLstOpts := types.ImageListOptions{All: true}
+	//log.Infof("RefreshImages: Total images on  %s = %v", e.Addr, len(e.images))
 	images, err := e.apiClient.ImageList(context.TODO(), imgLstOpts)
+	//log.Infof("RefreshImages GetImages: Total images on  %s = %v", e.Addr, len(e.images))
 	e.CheckConnectionErr(err)
 	if err != nil {
 		return err
@@ -590,6 +593,7 @@ func (e *Engine) RefreshImages() error {
 		e.images = append(e.images, &Image{Image: image, Engine: e})
 	}
 	e.Unlock()
+	log.Infof("RefreshImages: Total images on  %s = %v", e.Addr, len(e.images))
 	return nil
 }
 
@@ -1014,6 +1018,17 @@ func (e *Engine) Images() Images {
 	images := make(Images, len(e.images))
 	copy(images, e.images)
 	e.RUnlock()
+	log.Infof("Images: Total images on  %s = %v", e.Addr, len(e.images))
+	return images
+}
+
+// PedingImages returns all the pending images in the engine
+func (e *Engine) PendingImages() Images {
+	e.RLock()
+	images := make(Images, len(e.pendingImages))
+	copy(images, e.pendingImages)
+	e.RUnlock()
+	log.Infof("PendingImages: Total images on  %s = %v", e.Addr, len(e.pendingImages))
 	return images
 }
 
@@ -1128,6 +1143,30 @@ func (e *Engine) AddImage(image *Image) {
 	defer e.Unlock()
 
 	e.images = append(e.images, image)
+}
+
+// AddPendingImage injects an image into the internal state.
+func (e *Engine) AddPendingImage(image *Image) {
+	e.Lock()
+	defer e.Unlock()
+	e.pendingImages = append(e.pendingImages, image)
+}
+
+// DeletePendingImage deletes an image from the internal engine state.
+func (e *Engine) DeletePendingImage(image *Image) {
+	e.Lock()
+	w := 0
+	loop:
+    	for _, x := range e.pendingImages{
+            if image.ID == x.ID {
+                continue loop
+            }
+
+        e.pendingImages[w] = x
+        w++
+    	}
+    	e.pendingImages = e.pendingImages[:w]
+	e.Unlock()
 }
 
 // removeContainer removes a container from the internal state.

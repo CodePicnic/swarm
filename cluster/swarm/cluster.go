@@ -214,6 +214,7 @@ func (c *Cluster) createContainer(config *cluster.ContainerConfig, name string, 
 
 	c.scheduler.Unlock()
 
+	log.Infof("Create Container  %s on %s", name, engine.Addr)
 	container, err := engine.Create(config, name, true, authConfig)
 
 	c.scheduler.Lock()
