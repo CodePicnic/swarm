@@ -52,6 +52,9 @@ func (f *AffinityFilter) Filter(config *cluster.ContainerConfig, nodes []*node.N
 				for _, image := range node.Images {
 					log.Infof("append image.ID %s", image.ID)
 					images = append(images, image.ID)
+					if affinity.value == image.ID {
+						break
+					}
 					images = append(images, image.RepoTags...)
 					for _, tag := range image.RepoTags {
 						repo, _ := cluster.ParseRepositoryTag(tag)
@@ -62,6 +65,9 @@ func (f *AffinityFilter) Filter(config *cluster.ContainerConfig, nodes []*node.N
 				log.Infof("Start Range node.PendingImages %s", node.Addr)
 				for _, image := range node.PendingImages {
 					images = append(images, image.ID)
+					if affinity.value == image.ID {
+						break
+					}
 					images = append(images, image.RepoTags...)
 					for _, tag := range image.RepoTags {
 						repo, _ := cluster.ParseRepositoryTag(tag)
