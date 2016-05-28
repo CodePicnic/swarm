@@ -533,7 +533,7 @@ func postContainersCreate(c *context, w http.ResponseWriter, r *http.Request) {
 		}
 		name = r.Form.Get("name")
 	)
-
+	log.Infof("POST /containers/create %s", name)
 	if err := json.NewDecoder(r.Body).Decode(&config); err != nil {
 		httpError(w, err.Error(), http.StatusBadRequest)
 		return
@@ -551,6 +551,7 @@ func postContainersCreate(c *context, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	log.Infof("Start c.cluster.CreateContainer %s", name)
 	container, err := c.cluster.CreateContainer(containerConfig, name, authConfig)
 	if err != nil {
 		if strings.HasPrefix(err.Error(), "Conflict") {
@@ -560,6 +561,7 @@ func postContainersCreate(c *context, w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
+	log.Infof("End c.cluster.CreateContainer %s", name)
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
@@ -1210,28 +1212,28 @@ func postCommit(c *context, w http.ResponseWriter, r *http.Request) {
 			//	log.Infof("Refresh Images PostCommit %s", engine.Addr)
 			//	engine.RefreshImages()
 			//}
-        		image := struct{ Id string }{}
+			image := struct{ Id string }{}
 
 			decoder := json.NewDecoder(resp.Body)
-        		if err := decoder.Decode(&image); err != nil {
-                		httpError(w, err.Error(), http.StatusInternalServerError)
-        		}
-			
+			if err := decoder.Decode(&image); err != nil {
+				httpError(w, err.Error(), http.StatusInternalServerError)
+			}
+
 			commit_image := &cluster.Image{}
 			commit_image.ID = image.Id
 			now := time.Now()
 			commit_image.Created = now.Unix()
-			temp_image_name := "temp/"+"temp_"+now.Format("20060102150405")
+			temp_image_name := "temp/" + "temp_" + now.Format("20060102150405")
 			commit_image.RepoTags = append(commit_image.RepoTags, temp_image_name)
 			log.Infof("Refresh Images PostCommit %s", commit_image.ID)
- 
+
 			//container.Engine.AddImage(commit_image)
 			container.Engine.AddPendingImage(commit_image)
-		        //log.Infof("PostCommit AddImage: Total pendingImages on  %s = %v", container.Engine.Addr, len(container.Engine.PendingImages()))
+			//log.Infof("PostCommit AddImage: Total pendingImages on  %s = %v", container.Engine.Addr, len(container.Engine.PendingImages()))
 			container.Engine.RefreshImages()
-		        //log.Infof("PostCommit RefreshImages: Total images on  %s = %v", container.Engine.Addr, len(container.Engine.Images()))
+			//log.Infof("PostCommit RefreshImages: Total images on  %s = %v", container.Engine.Addr, len(container.Engine.Images()))
 			container.Engine.DeletePendingImage(commit_image)
-		        //log.Infof("PostCommit RefreshImages: Total pendingImages on  %s = %v", container.Engine.Addr, len(container.Engine.PendingImages()))
+			//log.Infof("PostCommit RefreshImages: Total pendingImages on  %s = %v", container.Engine.Addr, len(container.Engine.PendingImages()))
 		}
 	}
 

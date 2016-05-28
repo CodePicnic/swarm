@@ -139,7 +139,9 @@ func (c *Cluster) StartContainer(container *cluster.Container, hostConfig *docke
 
 // CreateContainer aka schedule a brand new container into the cluster.
 func (c *Cluster) CreateContainer(config *cluster.ContainerConfig, name string, authConfig *dockerclient.AuthConfig) (*cluster.Container, error) {
+	log.Infof("Start c.createContainer Affinity: false %s", name)
 	container, err := c.createContainer(config, name, false, authConfig)
+	log.Infof("End c.createContainer Affinity: false %s", name)
 
 	if err != nil {
 		var retries int64
@@ -149,7 +151,9 @@ func (c *Cluster) CreateContainer(config *cluster.ContainerConfig, name string, 
 			// Check if the image exists in the cluster
 			// If exists, retry with a image affinity
 			if c.Image(config.Image) != nil {
+				log.Infof("Start c.createContainer Affinity: true %s", name)
 				container, err = c.createContainer(config, name, true, authConfig)
+				log.Infof("End c.createContainer Affintiy: true %s", name)
 				retries++
 			}
 		}
@@ -189,7 +193,9 @@ func (c *Cluster) createContainer(config *cluster.ContainerConfig, name string, 
 		config.AddAffinity("image==" + config.Image)
 	}
 
+	log.Infof("Start c.scheduler.SelectNodesForContainer %s", name)
 	nodes, err := c.scheduler.SelectNodesForContainer(c.listNodes(), config)
+	log.Infof("End c.scheduler.SelectNodesForContainer %s", name)
 
 	if withImageAffinity {
 		config.RemoveAffinity("image==" + config.Image)
@@ -214,8 +220,9 @@ func (c *Cluster) createContainer(config *cluster.ContainerConfig, name string, 
 
 	c.scheduler.Unlock()
 
-	log.Infof("Create Container  %s on %s", name, engine.Addr)
+	log.Infof("Start engine.Create %s", name)
 	container, err := engine.Create(config, name, true, authConfig)
+	log.Infof("End engine.Create %s", name)
 
 	c.scheduler.Lock()
 	delete(c.pendingContainers, swarmID)
@@ -788,20 +795,18 @@ func (c *Cluster) Volumes() cluster.Volumes {
 	return out
 }
 
-
 // Engines returns all validated engines in the cluster.
 func (c *Cluster) Engines() cluster.Engines {
-        c.RLock()
-        defer c.RUnlock()
+	c.RLock()
+	defer c.RUnlock()
 
-        out := cluster.Engines{}
+	out := cluster.Engines{}
 	for _, n := range c.engines {
 		out = append(out, n)
 	}
 
-        return out
+	return out
 }
-
 
 // listNodes returns all validated engines in the cluster, excluding pendingEngines.
 func (c *Cluster) listNodes() []*node.Node {

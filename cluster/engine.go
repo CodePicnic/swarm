@@ -870,8 +870,9 @@ func (e *Engine) Create(config *ContainerConfig, name string, pullImage bool, au
 	// FIXME remove "duplicate" lines and move this to cluster/config.go
 	dockerConfig.CpuShares = int64(math.Ceil(float64(config.CpuShares*1024) / float64(e.Cpus)))
 	dockerConfig.HostConfig.CpuShares = dockerConfig.CpuShares
-
+	log.Infof("Start client.CreateContainer %s", name)
 	id, err = client.CreateContainer(&dockerConfig, name, nil)
+	log.Infof("End client.CreateContainer %s", name)
 	e.CheckConnectionErr(err)
 	if err != nil {
 		// If the error is other than not found, abort immediately.
@@ -892,9 +893,13 @@ func (e *Engine) Create(config *ContainerConfig, name string, pullImage bool, au
 
 	// Register the container immediately while waiting for a state refresh.
 	// Force a state refresh to pick up the newly created container.
+	log.Infof("Start e.refreshContainer %s", name)
 	e.refreshContainer(id, true)
+	log.Infof("Start e.RefreshVolumes %s", name)
 	e.RefreshVolumes()
+	log.Infof("Start e.RefreshNetworks %s", name)
 	e.RefreshNetworks()
+	log.Infof("End e.RefreshNetworks %s", name)
 
 	e.Lock()
 	container := e.containers[id]
@@ -1156,16 +1161,16 @@ func (e *Engine) AddPendingImage(image *Image) {
 func (e *Engine) DeletePendingImage(image *Image) {
 	e.Lock()
 	w := 0
-	loop:
-    	for _, x := range e.pendingImages{
-            if image.ID == x.ID {
-                continue loop
-            }
+loop:
+	for _, x := range e.pendingImages {
+		if image.ID == x.ID {
+			continue loop
+		}
 
-        e.pendingImages[w] = x
-        w++
-    	}
-    	e.pendingImages = e.pendingImages[:w]
+		e.pendingImages[w] = x
+		w++
+	}
+	e.pendingImages = e.pendingImages[:w]
 	e.Unlock()
 }
 
