@@ -69,9 +69,11 @@ func (f *AffinityFilter) Filter(config *cluster.ContainerConfig, nodes []*node.N
 				log.Infof("End Range node.PendingImages %s", node.Addr)
 				//log.Infof("Affinity Images: Total images on  %s = %v", node.Addr, len(node.Images))
 				//log.Infof("Affinity Images: Total images on  %s = %v", node.Addr, len(node.PendingImages))
+				log.Infof("Start Match(images...) %s", node.Addr)
 				if affinity.Match(images...) {
 					candidates = append(candidates, node)
 				}
+				log.Infof("End Match(images...) %s", node.Addr)
 				log.Infof("End Case Affinity=Image %s", node.Addr)
 			default:
 				labels := []string{}
