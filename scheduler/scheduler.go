@@ -2,6 +2,7 @@ package scheduler
 
 import (
 	"errors"
+	log "github.com/Sirupsen/logrus"
 	"strings"
 	"sync"
 
