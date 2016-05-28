@@ -1033,7 +1033,7 @@ func (e *Engine) PendingImages() Images {
 	images := make(Images, len(e.pendingImages))
 	copy(images, e.pendingImages)
 	e.RUnlock()
-	log.Infof("PendingImages: Total images on  %s = %v", e.Addr, len(e.pendingImages))
+	//log.Infof("PendingImages: Total images on  %s = %v", e.Addr, len(e.pendingImages))
 	return images
 }
 
