@@ -57,9 +57,7 @@ func (s *Scheduler) selectNodesForContainer(nodes []*node.Node, config *cluster.
 		return nil, errNoNodeAvailable
 	}
 
-	log.Infof("Start s.strategy.RankAndSort")
 	return s.strategy.RankAndSort(config, accepted)
-	log.Infof("End s.strategy.RankAndSort")
 }
 
 // Strategy returns the strategy name
