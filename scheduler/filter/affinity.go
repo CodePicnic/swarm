@@ -45,7 +45,9 @@ func (f *AffinityFilter) Filter(config *cluster.ContainerConfig, nodes []*node.N
 					candidates = append(candidates, node)
 				}
 			case "image":
+				log.Infof("Start Case Affinity=Image %s", node.Addr)
 				images := []string{}
+				log.Infof("Start Range node.Images %s", node.Addr)
 				for _, image := range node.Images {
 					images = append(images, image.ID)
 					images = append(images, image.RepoTags...)
@@ -54,6 +56,8 @@ func (f *AffinityFilter) Filter(config *cluster.ContainerConfig, nodes []*node.N
 						images = append(images, repo)
 					}
 				}
+				log.Infof("End Range node.Images %s", node.Addr)
+				log.Infof("Start Range node.PendingImages %s", node.Addr)
 				for _, image := range node.PendingImages {
 					images = append(images, image.ID)
 					images = append(images, image.RepoTags...)
@@ -62,11 +66,13 @@ func (f *AffinityFilter) Filter(config *cluster.ContainerConfig, nodes []*node.N
 						images = append(images, repo)
 					}
 				}
+				log.Infof("End Range node.PendingImages %s", node.Addr)
 				//log.Infof("Affinity Images: Total images on  %s = %v", node.Addr, len(node.Images))
 				//log.Infof("Affinity Images: Total images on  %s = %v", node.Addr, len(node.PendingImages))
 				if affinity.Match(images...) {
 					candidates = append(candidates, node)
 				}
+				log.Infof("End Case Affinity=Image %s", node.Addr)
 			default:
 				labels := []string{}
 				for _, container := range node.Containers {
