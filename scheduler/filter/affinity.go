@@ -51,7 +51,7 @@ func (f *AffinityFilter) Filter(config *cluster.ContainerConfig, nodes []*node.N
 				log.Infof("Start Range node.Images %s", node.Addr)
 				log.Infof("Affinity Image %s", affinity.value)
 				for _, image := range node.Images {
-					log.Infof("append image.ID %s", image.ID)
+					//log.Infof("append image.ID %s", image.ID)
 					images = append(images, image.ID)
 					images_map[image.ID] = 1
 					images = append(images, image.RepoTags...)
@@ -82,11 +82,11 @@ func (f *AffinityFilter) Filter(config *cluster.ContainerConfig, nodes []*node.N
 					candidates = append(candidates, node)
 				}
 				log.Infof("End Match(map) %s", affinity.value)
-				log.Infof("Start Match(images...) %s", node.Addr)
+				//log.Infof("Start Match(images...) %s", node.Addr)
 				//if affinity.Match(images...) {
 				//	candidates = append(candidates, node)
 				//}
-				log.Infof("End Match(images...) %s", node.Addr)
+				//log.Infof("End Match(images...) %s", node.Addr)
 				log.Infof("End Case Affinity=Image %s", node.Addr)
 			default:
 				labels := []string{}
