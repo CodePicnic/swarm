@@ -76,12 +76,12 @@ func (f *AffinityFilter) Filter(config *cluster.ContainerConfig, nodes []*node.N
 				log.Infof("End Range node.PendingImages %s", node.Addr)
 				//log.Infof("Affinity Images: Total images on  %s = %v", node.Addr, len(node.Images))
 				//log.Infof("Affinity Images: Total images on  %s = %v", node.Addr, len(node.PendingImages))
-				log.Infof("Start Match(map) %s", Affinity.value)
-				if _, ok := images_map[Affinity.value]; ok {
+				log.Infof("Start Match(map) %s", affinity.value)
+				if _, ok := images_map[ffinity.value]; ok {
 					log.Infof("Match Image %s", node.Addr)
 					candidates = append(candidates, node)
 				}
-				log.Infof("End Match(map) %s", Affinity.value)
+				log.Infof("End Match(map) %s", affinity.value)
 				log.Infof("Start Match(images...) %s", node.Addr)
 				//if affinity.Match(images...) {
 				//	candidates = append(candidates, node)
