@@ -47,40 +47,47 @@ func (f *AffinityFilter) Filter(config *cluster.ContainerConfig, nodes []*node.N
 			case "image":
 				log.Infof("Start Case Affinity=Image %s", node.Addr)
 				images := []string{}
+				var images_map map[string]int
 				log.Infof("Start Range node.Images %s", node.Addr)
 				log.Infof("Affinity Image %s", affinity.value)
 				for _, image := range node.Images {
 					log.Infof("append image.ID %s", image.ID)
 					images = append(images, image.ID)
-					if affinity.value == image.ID {
-						break
-					}
+					images_map[image.ID] = 1
 					images = append(images, image.RepoTags...)
+					images_map[image.RepoTags] = 1
 					for _, tag := range image.RepoTags {
 						repo, _ := cluster.ParseRepositoryTag(tag)
 						images = append(images, repo)
+						images_map[repo] = 1
 					}
 				}
 				log.Infof("End Range node.Images %s", node.Addr)
 				log.Infof("Start Range node.PendingImages %s", node.Addr)
 				for _, image := range node.PendingImages {
 					images = append(images, image.ID)
-					if affinity.value == image.ID {
-						break
-					}
+					images_map[image.ID] = 1
 					images = append(images, image.RepoTags...)
+					images_map[image.RepoTags] = 1
 					for _, tag := range image.RepoTags {
 						repo, _ := cluster.ParseRepositoryTag(tag)
 						images = append(images, repo)
+						images_map[repo] = 1
 					}
 				}
 				log.Infof("End Range node.PendingImages %s", node.Addr)
 				//log.Infof("Affinity Images: Total images on  %s = %v", node.Addr, len(node.Images))
 				//log.Infof("Affinity Images: Total images on  %s = %v", node.Addr, len(node.PendingImages))
-				log.Infof("Start Match(images...) %s", node.Addr)
-				if affinity.Match(images...) {
+				log.Infof("Start Match(map) %s", Affinity.value)
+				if _, ok := images_map[Affinity.value]; ok {
+					log.Infof("Match Image %s", node.Addr)
 					candidates = append(candidates, node)
 				}
+				log.Infof("End Match(map) %s", Affinity.value)
+				log.Infof("Start Match(images...) %s", node.Addr)
+				//if affinity.Match(images...) {
+				//	candidates = append(candidates, node)
+				//}
 				log.Infof("End Match(images...) %s", node.Addr)
 				log.Infof("End Case Affinity=Image %s", node.Addr)
 			default:
