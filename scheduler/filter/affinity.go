@@ -55,7 +55,6 @@ func (f *AffinityFilter) Filter(config *cluster.ContainerConfig, nodes []*node.N
 					images = append(images, image.ID)
 					images_map[image.ID] = 1
 					images = append(images, image.RepoTags...)
-					images_map[image.RepoTags] = 1
 					for _, tag := range image.RepoTags {
 						repo, _ := cluster.ParseRepositoryTag(tag)
 						images = append(images, repo)
@@ -68,7 +67,6 @@ func (f *AffinityFilter) Filter(config *cluster.ContainerConfig, nodes []*node.N
 					images = append(images, image.ID)
 					images_map[image.ID] = 1
 					images = append(images, image.RepoTags...)
-					images_map[image.RepoTags] = 1
 					for _, tag := range image.RepoTags {
 						repo, _ := cluster.ParseRepositoryTag(tag)
 						images = append(images, repo)
