@@ -47,7 +47,7 @@ func (f *AffinityFilter) Filter(config *cluster.ContainerConfig, nodes []*node.N
 			case "image":
 				log.Infof("Start Case Affinity=Image %s", node.Addr)
 				images := []string{}
-				var images_map map[string]int
+				images_map := make(map[string]int)
 				log.Infof("Start Range node.Images %s", node.Addr)
 				log.Infof("Affinity Image %s", affinity.value)
 				for _, image := range node.Images {
